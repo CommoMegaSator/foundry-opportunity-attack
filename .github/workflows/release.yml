@@ -1,0 +1,22 @@
+name: Release
+on:
+  push:
+    tags: ["v*"]
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set version from tag
+        run: |
+          V="${GITHUB_REF_NAME#v}"
+          jq --arg v "$V" '.version=$v' module.json > m.json && mv m.json module.json
+      - name: Zip
+        run: zip -r module.zip . -x ".git/*" ".github/*" "README.md"
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            module.json
+            module.zip
