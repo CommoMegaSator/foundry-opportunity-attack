@@ -1,0 +1,20 @@
+{
+  "id": "opportunity-attack",
+  "title": "Opportunity Attack Reactions",
+  "description": "Prompts a reaction attack when a hostile creature leaves a combatant's reach. Works with Midi QOL and dnd5e.",
+  "version": "0.1.0",
+  "compatibility": { "minimum": "13", "verified": "14" },
+  "authors": [{ "name": "valentyn" }],
+  "relationships": {
+    "requires": [
+      { "id": "socketlib", "type": "module" },
+      { "id": "midi-qol", "type": "module" }
+    ],
+    "systems": [{ "id": "dnd5e", "type": "system" }]
+  },
+  "esmodules": ["scripts/main.js"],
+  "languages": [
+    { "lang": "en", "name": "English", "path": "lang/en.json" },
+    { "lang": "uk", "name": "Українська", "path": "lang/uk.json" }
+  ]
+}

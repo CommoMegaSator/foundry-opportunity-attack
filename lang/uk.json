@@ -1,0 +1,10 @@
+{
+  "OPPATK.Title": "Атака можливості",
+  "OPPATK.Prompt": "{mover} виходить з зони досяжності {reactor}. Атакувати реакцією?",
+  "OPPATK.Skip": "Не атакувати",
+  "OPPATK.Disengage": "Відступ (Disengage)",
+  "OPPATK.Enabled": "Увімкнути пропозиції атаки можливості",
+  "OPPATK.EnabledHint": "Працює лише під час активного бою.",
+  "OPPATK.IncludeApi": "Реагувати також на рух зі скриптів/API",
+  "OPPATK.IncludeApiHint": "Зазвичай вимкнено: телепорти (Misty Step) та скриптовий рух не провокують."
+}

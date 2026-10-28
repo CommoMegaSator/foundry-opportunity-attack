@@ -1,0 +1,10 @@
+{
+  "OPPATK.Title": "Opportunity Attack",
+  "OPPATK.Prompt": "{mover} leaves the reach of {reactor}. Make an opportunity attack?",
+  "OPPATK.Skip": "No attack",
+  "OPPATK.Disengage": "Disengage",
+  "OPPATK.Enabled": "Enable opportunity attack prompts",
+  "OPPATK.EnabledHint": "Prompts only during active combat.",
+  "OPPATK.IncludeApi": "Also react to script/API movement",
+  "OPPATK.IncludeApiHint": "Normally off: teleports (Misty Step) and scripted moves do not provoke."
+}
