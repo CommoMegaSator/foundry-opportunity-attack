@@ -3,7 +3,7 @@
  * When a creature leaves the reach of a hostile combatant, the owner of that combatant
  * gets a prompt to make a melee attack as a reaction (via Midi QOL).
  *
- * Skips: no reaction available, incapacitated reactor, hidden mover, "Disengage" status,
+ * Skips: no reaction available, reactor blinded or mover heavily obscured (region with flags.opportunity-attack.obscured, e.g. Fog Cloud), incapacitated reactor, hidden mover, "Disengage" status,
  * flag `flags.opportunity-attack.noProvoke` on the mover actor, Flyby-type traits,
  * teleports / script moves (movement method "api") unless enabled in settings.
  */
@@ -119,6 +119,26 @@ function isExempt(moverActor) {
   return false;
 }
 
+
+/* Heavy obscurement (e.g. Fog Cloud): regions flagged `flags.opportunity-attack.obscured`.
+ * A reactor must be able to SEE the mover, so a straight line between the two that touches such a region blocks it. */
+function sightBlocked(rDoc, moverDoc, fromPos) {
+  const scene = moverDoc.parent;
+  const regions = scene.regions.filter(r => foundry.utils.getProperty(r, `flags.${MOD}.obscured`));
+  if (!regions.length) return false;
+  const gs = scene.grid.size;
+  const ctr = (pos, d) => ({ x: pos.x + (d.width * gs) / 2, y: pos.y + (d.height * gs) / 2 });
+  const a = ctr(rDoc, rDoc), b = ctr(fromPos, moverDoc);
+  const steps = Math.max(2, Math.ceil(Math.hypot(b.x - a.x, b.y - a.y) / (gs / 4)));
+  for (let i = 0; i <= steps; i++) {
+    const pt = { x: a.x + ((b.x - a.x) * i) / steps, y: a.y + ((b.y - a.y) * i) / steps };
+    for (const r of regions) {
+      try { if ((r.object?.testPoint ? r.object.testPoint(pt, moverDoc.elevation) : r.testPoint(pt, moverDoc.elevation))) return true; } catch (e) { /* ignore */ }
+    }
+  }
+  return false;
+}
+
 /* ---------- main check ---------- */
 
 async function checkMovement(moverDoc, mv) {
@@ -138,6 +158,8 @@ async function checkMovement(moverDoc, mv) {
     if (rDoc.disposition * moverDoc.disposition !== -1) continue;
     const rActor = rDoc.actor;
     if (!canReact(rActor)) continue;
+    if (rActor.statuses.has("blinded")) continue;
+    if (sightBlocked(rDoc, moverDoc, path[0])) continue;
     const options = meleeOptions(rActor);
     if (!options.length) continue;
     const rRect = rectOf(rDoc, rDoc);
