@@ -139,6 +139,19 @@ function sightBlocked(rDoc, moverDoc, fromPos) {
   return false;
 }
 
+
+/* Invisible mover: the reactor can't see it unless it has truesight/blindsight (in range) or a see-invisible effect. */
+function cantSeeInvisible(rActor, rDoc, moverDoc, fromPos) {
+  if (!moverDoc.actor?.statuses.has("invisible")) return false;
+  const r = rActor.system?.attributes?.senses?.ranges ?? {};
+  const gs = moverDoc.parent.grid;
+  const dist = rectDistance(rectOf(fromPos, moverDoc), rectOf(rDoc, rDoc));
+  const reach = Math.max(r.truesight ?? 0, r.blindsight ?? 0);
+  if (reach >= dist) return false;
+  if (foundry.utils.getProperty(rActor, `flags.${MOD}.seeInvisible`)) return false;
+  return true;
+}
+
 /* ---------- main check ---------- */
 
 async function checkMovement(moverDoc, mv) {
@@ -160,6 +173,7 @@ async function checkMovement(moverDoc, mv) {
     if (!canReact(rActor)) continue;
     if (rActor.statuses.has("blinded")) continue;
     if (sightBlocked(rDoc, moverDoc, path[0])) continue;
+    if (cantSeeInvisible(rActor, rDoc, moverDoc, path[0])) continue;
     const options = meleeOptions(rActor);
     if (!options.length) continue;
     const rRect = rectOf(rDoc, rDoc);
